@@ -7,11 +7,11 @@ name: Docker ghcr.io
 
 on:
   push:
-    branches: [main]
+    branches: [main,tdouguo.com]
     # Publish semver tags as releases.
     tags: ["v*.*.*"]
   pull_request:
-    branches: [main]
+    branches: [main,tdouguo.com]
 
 env:
   # Use docker.io for Docker Hub if empty
