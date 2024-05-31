@@ -35,9 +35,11 @@ jobs:
       # Step 3: Attempt to merge upstream changes into the tdouguo branch
       - name: Merge main to tdouguo branch
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git checkout -b tdouguo origin/tdouguo || git checkout tdouguo
+          if git show-ref --verify --quiet refs/heads/tdouguo; then
+            git checkout tdouguo
+          else
+            git checkout -b tdouguo origin/main
+          fi
           git merge origin/main || (echo "Merge conflicts detected, aborting merge." && git merge --abort && exit 0)
           git push origin tdouguo
 
