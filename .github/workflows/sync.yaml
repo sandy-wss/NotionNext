@@ -32,6 +32,15 @@ jobs:
           # Set test_mode true to run tests instead of the true action!!
           test_mode: false
 
+      # Step 3: Attempt to merge upstream changes into the tdouguo branch
+      - name: Merge upstream changes to tdouguo branch
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git checkout -b tdouguo origin/tdouguo || git checkout tdouguo
+          git merge origin/main || (echo "Merge conflicts detected, aborting merge." && git merge --abort && exit 0)
+          git push origin tdouguo
+
       - name: Sync check
         if: failure()
         run: |
