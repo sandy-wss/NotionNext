@@ -34,17 +34,66 @@ jobs:
 
       # Step 3: Attempt to merge upstream changes into the tdouguo branch
       - name: Merge main to tdouguo branch
+
+The updated script shows that the branch tdouguo was successfully created and checked out, but when trying to push, it still encounters the rejection due to the remote branch having changes that the local branch does not. This suggests that the initial pull might not be fetching the latest changes correctly.
+
+To ensure that the script correctly handles the remote branch changes and avoids the push rejection, you should:
+
+Fetch all branches before checking out.
+Rebase instead of merging to avoid conflicts and ensure a linear history.
+Force-push if necessary (use with caution).
+Here’s an updated script incorporating these steps:
+
+yaml
+复制代码
+name: Upstream Sync
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # every day
+  workflow_dispatch:
+
+jobs:
+  sync_latest_from_upstream:
+    name: Sync latest commits from upstream repo
+    runs-on: ubuntu-latest
+    if: ${{ github.event.repository.fork }}
+
+    steps:
+      # Step 1: run a standard checkout action
+      - name: Checkout target repo
+        uses: actions/checkout@v3
+
+      # Step 2: run the sync action
+      - name: Sync upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
+        with:
+          upstream_sync_repo: tangly1024/NotionNext
+          upstream_sync_branch: main
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.GHCR_TOKEN }} # automatically generated, no need to set
+
+          # Set test_mode true to run tests instead of the true action!!
+          test_mode: false
+
+      # Step 3: Attempt to merge upstream changes into the tdouguo branch
+      - name: Merge main to tdouguo branch
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
+          git fetch origin
           if git show-ref --verify --quiet refs/heads/tdouguo; then
             git checkout tdouguo
             git pull origin tdouguo
           else
             git checkout -b tdouguo origin/main
           fi
-          git merge origin/main || (echo "Merge conflicts detected, aborting merge." && git merge --abort && exit 0)
-          git push origin tdouguo
+          git rebase origin/main || (echo "Rebase conflicts detected, aborting rebase." && git rebase --abort && exit 0)
+          git push origin tdouguo --force
 
       - name: Sync check
         if: failure()
