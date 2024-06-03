@@ -51,7 +51,7 @@ jobs:
               echo "详情参见: 'https://www.ghlcode.cn/fe032806-5362-4d82-b746-a0b26ce8b9d9'"
             fi
             if [ -n "$BING_API_KEY" ]; then
-              python pushUrl.py --url $URL --bing_api_key $BING_API_KEY
+              python pushUrl.py --url $URL --bing_api_key $BING_API_KEY --indenow_key $INDEXNOW_KEY --indexnow_txt $INDEXNOW_TXT
             else
               echo "请前往 Github Action Secrets 配置 BING_API_KEY:"
               echo "详情参见: 'https://www.ghlcode.cn/fe032806-5362-4d82-b746-a0b26ce8b9d9'"
