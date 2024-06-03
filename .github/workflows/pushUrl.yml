@@ -40,10 +40,12 @@ jobs:
           URL: ${{ secrets.URL }}
           BAIDU_TOKEN: ${{ secrets.BAIDU_TOKEN }}
           BING_API_KEY: ${{ secrets.BING_API_KEY }}
+          INDEXNOW_KEY: ${{ secrets.BING_INDEXNOW_KEY }}
+          INDEXNOW_TXT: ${{ secrets.BING_INDEXNOW_TXT }}
         run: |
           if [ -n "$URL" ]; then
             if [ -n "$BAIDU_TOKEN" ]; then
-              python pushUrl.py --url $URL --baidu_token $BAIDU_TOKEN
+              python pushUrl.py --url $URL --baidu_token $BAIDU_TOKEN --indenow_key $INDEXNOW_KEY --indexnow_txt $INDEXNOW_TXT
             else
               echo "请前往 Github Action Secrets 配置 BAIDU_TOKEN:"
               echo "详情参见: 'https://www.ghlcode.cn/fe032806-5362-4d82-b746-a0b26ce8b9d9'"
