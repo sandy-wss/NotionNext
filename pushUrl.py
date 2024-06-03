@@ -45,6 +45,28 @@ def push_to_bing(site, urls, api_key):
     except Exception as e:
         print("An error occurred:", e)
 
+def push_to_bing_IndexNow(site, urls, indexnow_key, indexnow_txt):
+    # https://www.bing.com/indexnow/getstarted
+    url = "https://api.indexnow.org/indexnow"
+    headers = {
+        "Content-Type": "application/json; charset=utf-8"
+    }
+    payload = {
+        "host": site,
+        "key": api_key,
+        "keyLocation": f"https://{site}/{txt_name}.txt",
+        "urlList": urls
+    }
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        result = response.json()
+        if response.status_code == 200:
+            print("成功推送到 IndexNow.")
+        else:
+            print("推送到 Bing IndexNow 出现错误，错误信息为：", response.status_code, response.json())
+    except Exception as e:
+        print("An error occurred:", e)
+
 
 def push_to_baidu(site, urls, token):
     api_url = f"http://data.zz.baidu.com/urls?site={site}&token={token}"
@@ -70,6 +92,8 @@ if __name__ == '__main__':
     parser.add_argument('--url', type=str, default=None, help='The url of your website')
     parser.add_argument('--bing_api_key', type=str, default=None, help='your bing api key')
     parser.add_argument('--baidu_token', type=str, default=None, help='Your baidu push token')
+    parser.add_argument('--indexnow_key', type=str, default=None, help='Your bing IndexNow Key')
+    parser.add_argument('--indexnow_txt', type=str, default=None, help='Your baidu IndexNow Txt')
     args = parser.parse_args()
 
     # 获取当前的时间戳作为随机种子
@@ -91,6 +115,10 @@ if __name__ == '__main__':
             if args.baidu_token:
                 print('正在推送至百度，请稍后……')
                 push_to_baidu(args.url, urls, args.baidu_token)
+            # 推送到IndexNow
+            if args.indexnow_key and args.indexnow_txt:
+                print('正在推送至IndexNow，请稍后……')
+                push_to_bing_IndexNow(args.url, urls, args.indexnow_key, args.indexnow_txt)
     else:
         print('请前往 Github Action Secrets 配置 URL')
         print('详情参见: https://ghlcode.cn/fe032806-5362-4d82-b746-a0b26ce8b9d9')
